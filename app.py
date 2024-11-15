@@ -1,4 +1,5 @@
 import os
+import sys
 from flask import Flask, render_template, jsonify, send_file
 from data_collection import start_collection, stop_collection, get_logs as get_collection_logs
 from model_training import train_model, get_training_logs
@@ -76,12 +77,14 @@ def prediccion_imagen():
 def ejecutar_predict_script():
     global is_predicting
     try:
-        # Ruta relativa al intérprete de Python de tu entorno virtual
-        python_path = os.path.join(BASE_DIR, "ProyectoCalidadAire", "Scripts", "python.exe")
+        # Determina el intérprete de Python según el sistema operativo
+        python_interpreter = "python3" if os.name != "nt" else sys.executable
+
+        # Ruta al script predict.py
+        script_path = os.path.join(BASE_DIR, "predict.py")
 
         # Ejecutar predict.py y capturar la salida
-        script_path = os.path.join(BASE_DIR, "predict.py")
-        result = subprocess.run([python_path, script_path], capture_output=True, text=True)
+        result = subprocess.run([python_interpreter, script_path], capture_output=True, text=True)
         if result.returncode == 0:
             prediction_logs.append(f"Predicción realizada con éxito: \n{result.stdout}")
         else:
