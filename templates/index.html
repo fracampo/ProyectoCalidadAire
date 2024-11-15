@@ -15,12 +15,31 @@
             padding: 10px;
             height: 200px;
             overflow-y: scroll;
-            font-family: monospace; /* Usar una fuente monoespaciada para un mejor alineamiento */
-            white-space: pre-wrap; /* Respetar los saltos de línea y espacios */
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 30px; /* Más espacio encima de los logs */
+        }
+        /* Estilo para el logo */
+        .logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 150px;
+            margin-bottom: 40px; /* Más espacio debajo del logo */
+        }
+        /* Espaciado entre los elementos */
+        .container {
+            margin-top: 50px; /* Más espacio encima del contenedor principal */
+        }
+        .nav-tabs {
+            margin-top: 30px; /* Más espacio encima de las pestañas */
+        }
+        .btn {
+            margin: 10px; /* Espacio adicional alrededor de los botones */
         }
     </style>
     <script>
-        // Función para iniciar la recolección de datos
+        // Funciones para recolección de datos, entrenamiento y predicción
         function startCollection() {
             fetch('/start')
                 .then(response => response.text())
@@ -31,7 +50,6 @@
                 });
         }
 
-        // Función para detener la recolección de datos
         function stopCollection() {
             fetch('/stop')
                 .then(response => response.text())
@@ -42,7 +60,6 @@
                 });
         }
 
-        // Función para iniciar el entrenamiento del modelo
         function trainModel() {
             document.getElementById('trainButton').disabled = true;
             document.getElementById('trainButton').innerText = "Entrenando...";
@@ -61,13 +78,12 @@
                 });
         }
 
-        // Función para iniciar la predicción
         function startPrediction() {
             const predictButton = document.getElementById('predictButton');
             const predictionImage = document.getElementById('predictionImage');
             predictButton.disabled = true;
             predictButton.innerText = "Prediciendo...";
-            predictionImage.style.display = "none"; // Oculta la imagen mientras se predice
+            predictionImage.style.display = "none";
 
             fetch('/predict', { method: 'POST' })
                 .then(response => response.json())
@@ -75,8 +91,8 @@
                     alert(data.message);
                     predictButton.disabled = false;
                     predictButton.innerText = "Realizar Predicción";
-                    predictionImage.src = "/prediccion_imagen?" + new Date().getTime(); // Actualiza la imagen
-                    predictionImage.style.display = "block"; // Muestra la imagen
+                    predictionImage.src = "/prediccion_imagen?" + new Date().getTime();
+                    predictionImage.style.display = "block";
                 })
                 .catch(error => {
                     alert('Error durante la predicción');
@@ -85,33 +101,30 @@
                 });
         }
 
-        // Función para actualizar los logs de recolección de datos
         function updateLogs() {
             fetch('/logs')
                 .then(response => response.json())
                 .then(data => {
                     let logsContainer = document.getElementById('logs');
-                    logsContainer.textContent = data.join("\n"); // Usar saltos de línea para formato
+                    logsContainer.textContent = data.join("\n");
                 });
         }
 
-        // Función para actualizar los logs de entrenamiento
         function updateTrainingLogs() {
             fetch('/training_logs')
                 .then(response => response.json())
                 .then(data => {
                     let trainingLogsContainer = document.getElementById('training_logs');
-                    trainingLogsContainer.textContent = data.logs.join("\n"); // Usar saltos de línea para formato
+                    trainingLogsContainer.textContent = data.logs.join("\n");
                 });
         }
 
-        // Función para actualizar los logs de predicción
         function updatePredictionLogs() {
             fetch('/prediction_logs')
                 .then(response => response.json())
                 .then(data => {
                     let predictionLogsContainer = document.getElementById('prediction_logs');
-                    predictionLogsContainer.textContent = data.logs.join("\n"); // Usar saltos de línea para formato
+                    predictionLogsContainer.textContent = data.logs.join("\n");
                 });
         }
 
@@ -122,9 +135,11 @@
     </script>
 </head>
 <body>
-    <div class="container mt-4">
-        <h1 class="text-center">Proyecto Calidad de Aire - Modelo IA</h1>
-        <!-- Pestañas de navegación -->
+    <!-- Contenedor principal con más espacio arriba -->
+    <div class="container text-center">
+        <img src="{{ url_for('static', filename='images/air_quality.png') }}" alt="Air Quality Logo" class="logo">
+        <h1>Prototipo Análisis Calidad de Aire - Modelos IA - APIS</h1>
+        <!-- Pestañas de navegación con espacio adicional arriba -->
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" id="collection-tab" data-toggle="tab" href="#collection" role="tab" aria-controls="collection" aria-selected="true">Recolección de Datos</a>
@@ -141,31 +156,31 @@
         <div class="tab-content" id="myTabContent">
             <!-- Pestaña de Recolección de Datos -->
             <div class="tab-pane fade show active" id="collection" role="tabpanel" aria-labelledby="collection-tab">
-                <div class="mt-3">
+                <div class="mt-4 mb-4">
                     <button id="startButton" class="btn btn-primary" onclick="startCollection()">Iniciar Recolección</button>
                     <button id="stopButton" class="btn btn-danger" onclick="stopCollection()" disabled>Detener Recolección</button>
                 </div>
-                <h2 class="mt-3">Logs de Recolección de Datos:</h2>
+                <h2>Logs de Recolección de Datos:</h2>
                 <div id="logs" class="log-container"></div>
             </div>
 
             <!-- Pestaña de Entrenamiento del Modelo -->
             <div class="tab-pane fade" id="training" role="tabpanel" aria-labelledby="training-tab">
-                <div class="mt-3">
+                <div class="mt-4 mb-4">
                     <button id="trainButton" class="btn btn-success" onclick="trainModel()">Entrenar Modelo</button>
                 </div>
-                <h2 class="mt-3">Logs de Entrenamiento:</h2>
+                <h2>Logs de Entrenamiento:</h2>
                 <div id="training_logs" class="log-container"></div>
             </div>
 
             <!-- Pestaña de Predicción -->
             <div class="tab-pane fade" id="prediction" role="tabpanel" aria-labelledby="prediction-tab">
-                <div class="mt-3">
+                <div class="mt-4 mb-4">
                     <button id="predictButton" class="btn btn-info" onclick="startPrediction()">Realizar Predicción</button>
                 </div>
-                <h2 class="mt-3">Logs de Predicción:</h2>
+                <h2>Logs de Predicción:</h2>
                 <div id="prediction_logs" class="log-container"></div>
-                <h2 class="mt-3">Gráfica de Predicción:</h2>
+                <h2>Gráfica de Predicción:</h2>
                 <img id="predictionImage" src="/prediccion_imagen" alt="Gráfica de Predicción PM2.5" class="img-fluid" style="display: none;">
             </div>
         </div>

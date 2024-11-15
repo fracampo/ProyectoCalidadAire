@@ -9,6 +9,9 @@ import threading
 
 app = Flask(__name__)
 
+# Configurar la codificación predeterminada
+locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+
 # Obtener el directorio base del proyecto
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
