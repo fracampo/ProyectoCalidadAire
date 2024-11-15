@@ -1,5 +1,6 @@
 import os
 import sys
+import locale
 from flask import Flask, render_template, jsonify, send_file
 from data_collection import start_collection, stop_collection, get_logs as get_collection_logs
 from model_training import train_model, get_training_logs
@@ -83,8 +84,16 @@ def ejecutar_predict_script():
         # Ruta al script predict.py
         script_path = os.path.join(BASE_DIR, "predict.py")
 
-        # Ejecutar predict.py y capturar la salida
-        result = subprocess.run([python_interpreter, script_path], capture_output=True, text=True)
+        # Obtén la codificación predeterminada del sistema
+        encoding = locale.getpreferredencoding(False)
+
+        # Ejecutar predict.py y capturar la salida con la codificación UTF-8
+        result = subprocess.run(
+            [python_interpreter, script_path],
+            capture_output=True,
+            text=True,
+            encoding='utf-8'  # Especifica la codificación UTF-8
+        )
         if result.returncode == 0:
             prediction_logs.append(f"Predicción realizada con éxito: \n{result.stdout}")
         else:

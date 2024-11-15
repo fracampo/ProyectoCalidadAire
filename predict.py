@@ -58,8 +58,12 @@ def realizar_prediccion():
 
             fecha_prediccion = features.index[-1] + timedelta(days=1)
             fechas_predicciones = [fecha_prediccion + timedelta(days=i) for i in range(5)]
+
+            # Cambiar el formato de las fechas a "MM-DD"
+            fechas_formateadas = [fecha.strftime("%m-%d") for fecha in fechas_predicciones]
+
             predicciones_df = pd.DataFrame({
-                'Fecha': fechas_predicciones,
+                'Fecha': fechas_formateadas,
                 'Predicción PM2.5': predicciones_invertidas,
                 'Ubicación': ubicacion
             })
@@ -75,9 +79,9 @@ def realizar_prediccion():
         plt.title('Predicción de PM2.5 para los próximos 5 días')
         plt.xlabel('Fecha')
         plt.ylabel('Concentración PM2.5 (µg/m³)')
-        plt.axvline(x=fechas_predicciones[0], color='gray', linestyle='--', label='Fecha de predicción')
+        plt.axvline(x=fechas_formateadas[0], color='gray', linestyle='--', label='Fecha de predicción')
         plt.legend()
-        plt.xticks(rotation=45)
+        plt.xticks(fechas_formateadas)  # Establecer manualmente las etiquetas del eje X
         plt.tight_layout()
 
         # Guardar la gráfica como imagen en una ruta relativa

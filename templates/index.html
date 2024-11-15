@@ -64,8 +64,10 @@
         // Función para iniciar la predicción
         function startPrediction() {
             const predictButton = document.getElementById('predictButton');
+            const predictionImage = document.getElementById('predictionImage');
             predictButton.disabled = true;
             predictButton.innerText = "Prediciendo...";
+            predictionImage.style.display = "none"; // Oculta la imagen mientras se predice
 
             fetch('/predict', { method: 'POST' })
                 .then(response => response.json())
@@ -73,6 +75,8 @@
                     alert(data.message);
                     predictButton.disabled = false;
                     predictButton.innerText = "Realizar Predicción";
+                    predictionImage.src = "/prediccion_imagen?" + new Date().getTime(); // Actualiza la imagen
+                    predictionImage.style.display = "block"; // Muestra la imagen
                 })
                 .catch(error => {
                     alert('Error durante la predicción');
@@ -162,7 +166,7 @@
                 <h2 class="mt-3">Logs de Predicción:</h2>
                 <div id="prediction_logs" class="log-container"></div>
                 <h2 class="mt-3">Gráfica de Predicción:</h2>
-                <img src="/prediccion_imagen" alt="Gráfica de Predicción PM2.5" class="img-fluid">
+                <img id="predictionImage" src="/prediccion_imagen" alt="Gráfica de Predicción PM2.5" class="img-fluid" style="display: none;">
             </div>
         </div>
     </div>

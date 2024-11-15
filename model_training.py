@@ -3,15 +3,22 @@ import numpy as np
 from pymongo import MongoClient
 from keras.models import Sequential
 from keras.layers import LSTM, Dense, Dropout
+from keras.callbacks import Callback
 from sklearn.preprocessing import MinMaxScaler
 
-logs = []  # Lista para almacenar los logs del entrenamiento
+training_logs = []  # Cambiar el nombre de la lista de logs
+
+# Callback personalizado para capturar los logs de entrenamiento
+class TrainingLogger(Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        log_message = f"Epoch {epoch + 1}/{self.params['epochs']} - loss: {logs['loss']:.4f}"
+        training_logs.append(log_message)
 
 # Función para el entrenamiento del modelo
 def train_model():
-    global logs
+    global training_logs
     try:
-        logs = []  # Reiniciar los logs antes de iniciar el entrenamiento
+        training_logs = []  # Reiniciar los logs antes de iniciar el entrenamiento
 
         # Conexión a MongoDB
         client = MongoClient("mongodb+srv://edeperezdm:rdGCIpGm2hW55OdH@cluster0.xzpq3.mongodb.net/")
@@ -19,7 +26,7 @@ def train_model():
         collection = db["mediciones"]
 
         # Obtener datos de MongoDB
-        logs.append("Obteniendo datos de MongoDB...")
+        training_logs.append("Obteniendo datos de MongoDB...")
         data = pd.DataFrame(list(collection.find()))
 
         # Preprocesamiento de datos
@@ -50,7 +57,7 @@ def train_model():
         X = X.reshape(X.shape[0], X.shape[1], features.shape[1])
 
         # Crear y compilar el modelo LSTM
-        logs.append("Creando y compilando el modelo...")
+        training_logs.append("Creando y compilando el modelo...")
         model = Sequential()
         model.add(LSTM(50, return_sequences=True, input_shape=(X.shape[1], features.shape[1])))
         model.add(Dropout(0.2))
@@ -60,24 +67,24 @@ def train_model():
 
         model.compile(optimizer='adam', loss='mean_squared_error')
 
-        # Entrenar el modelo
-        logs.append("Entrenando el modelo...")
-        model.fit(X, y, epochs=10, batch_size=1, verbose=2)
+        # Entrenar el modelo con el callback
+        training_logs.append("Entrenando el modelo...")
+        model.fit(X, y, epochs=10, batch_size=1, verbose=0, callbacks=[TrainingLogger()])
 
         # Evaluar el modelo
         mse_entrenamiento = model.evaluate(X, y, verbose=0)
-        logs.append(f"Error cuadrático medio (MSE) en el entrenamiento: {mse_entrenamiento}")
+        training_logs.append(f"Error cuadrático medio (MSE) en el entrenamiento: {mse_entrenamiento}")
 
         # Guardar el modelo en formato nativo de Keras
         model.save("nuevo_modelo_lstm_general.h5")
-        logs.append("Modelo entrenado y guardado exitosamente en formato .keras.")
+        training_logs.append("Modelo entrenado y guardado exitosamente en formato .keras.")
 
         return "Entrenamiento completado exitosamente."
 
     except Exception as e:
-        logs.append(f"Error durante el entrenamiento: {str(e)}")
+        training_logs.append(f"Error durante el entrenamiento: {str(e)}")
         return f"Error: {str(e)}"
 
 # Función para obtener los logs del entrenamiento
 def get_training_logs():
-    return logs
+    return training_logs
