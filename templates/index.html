@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Calidad del Aire, Entrenamiento y Predicción</title>
+
+    <!-- Enlaces a Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Estilo para los contenedores de logs */
+        .log-container {
+            border: 1px solid #000;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+            font-family: monospace; /* Usar una fuente monoespaciada para un mejor alineamiento */
+            white-space: pre-wrap; /* Respetar los saltos de línea y espacios */
+        }
+    </style>
+    <script>
+        // Función para iniciar la recolección de datos
+        function startCollection() {
+            fetch('/start')
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    document.getElementById('startButton').disabled = true;
+                    document.getElementById('stopButton').disabled = false;
+                });
+        }
+
+        // Función para detener la recolección de datos
+        function stopCollection() {
+            fetch('/stop')
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    document.getElementById('startButton').disabled = false;
+                    document.getElementById('stopButton').disabled = true;
+                });
+        }
+
+        // Función para iniciar el entrenamiento del modelo
+        function trainModel() {
+            document.getElementById('trainButton').disabled = true;
+            document.getElementById('trainButton').innerText = "Entrenando...";
+
+            fetch('/train', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    document.getElementById('trainButton').disabled = false;
+                    document.getElementById('trainButton').innerText = "Entrenar Modelo";
+                })
+                .catch(error => {
+                    alert('Error durante el entrenamiento');
+                    document.getElementById('trainButton').disabled = false;
+                    document.getElementById('trainButton').innerText = "Entrenar Modelo";
+                });
+        }
+
+        // Función para iniciar la predicción
+        function startPrediction() {
+            const predictButton = document.getElementById('predictButton');
+            predictButton.disabled = true;
+            predictButton.innerText = "Prediciendo...";
+
+            fetch('/predict', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    predictButton.disabled = false;
+                    predictButton.innerText = "Realizar Predicción";
+                })
+                .catch(error => {
+                    alert('Error durante la predicción');
+                    predictButton.disabled = false;
+                    predictButton.innerText = "Realizar Predicción";
+                });
+        }
+
+        // Función para actualizar los logs de recolección de datos
+        function updateLogs() {
+            fetch('/logs')
+                .then(response => response.json())
+                .then(data => {
+                    let logsContainer = document.getElementById('logs');
+                    logsContainer.textContent = data.join("\n"); // Usar saltos de línea para formato
+                });
+        }
+
+        // Función para actualizar los logs de entrenamiento
+        function updateTrainingLogs() {
+            fetch('/training_logs')
+                .then(response => response.json())
+                .then(data => {
+                    let trainingLogsContainer = document.getElementById('training_logs');
+                    trainingLogsContainer.textContent = data.logs.join("\n"); // Usar saltos de línea para formato
+                });
+        }
+
+        // Función para actualizar los logs de predicción
+        function updatePredictionLogs() {
+            fetch('/prediction_logs')
+                .then(response => response.json())
+                .then(data => {
+                    let predictionLogsContainer = document.getElementById('prediction_logs');
+                    predictionLogsContainer.textContent = data.logs.join("\n"); // Usar saltos de línea para formato
+                });
+        }
+
+        // Actualizar los logs cada 5 segundos
+        setInterval(updateLogs, 5000);
+        setInterval(updateTrainingLogs, 5000);
+        setInterval(updatePredictionLogs, 5000);
+    </script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center">Proyecto Calidad de Aire - Modelo IA</h1>
+        <!-- Pestañas de navegación -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="collection-tab" data-toggle="tab" href="#collection" role="tab" aria-controls="collection" aria-selected="true">Recolección de Datos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="training-tab" data-toggle="tab" href="#training" role="tab" aria-controls="training" aria-selected="false">Entrenamiento del Modelo</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="prediction-tab" data-toggle="tab" href="#prediction" role="tab" aria-controls="prediction" aria-selected="false">Predicción</a>
+            </li>
+        </ul>
+
+        <!-- Contenido de las pestañas -->
+        <div class="tab-content" id="myTabContent">
+            <!-- Pestaña de Recolección de Datos -->
+            <div class="tab-pane fade show active" id="collection" role="tabpanel" aria-labelledby="collection-tab">
+                <div class="mt-3">
+                    <button id="startButton" class="btn btn-primary" onclick="startCollection()">Iniciar Recolección</button>
+                    <button id="stopButton" class="btn btn-danger" onclick="stopCollection()" disabled>Detener Recolección</button>
+                </div>
+                <h2 class="mt-3">Logs de Recolección de Datos:</h2>
+                <div id="logs" class="log-container"></div>
+            </div>
+
+            <!-- Pestaña de Entrenamiento del Modelo -->
+            <div class="tab-pane fade" id="training" role="tabpanel" aria-labelledby="training-tab">
+                <div class="mt-3">
+                    <button id="trainButton" class="btn btn-success" onclick="trainModel()">Entrenar Modelo</button>
+                </div>
+                <h2 class="mt-3">Logs de Entrenamiento:</h2>
+                <div id="training_logs" class="log-container"></div>
+            </div>
+
+            <!-- Pestaña de Predicción -->
+            <div class="tab-pane fade" id="prediction" role="tabpanel" aria-labelledby="prediction-tab">
+                <div class="mt-3">
+                    <button id="predictButton" class="btn btn-info" onclick="startPrediction()">Realizar Predicción</button>
+                </div>
+                <h2 class="mt-3">Logs de Predicción:</h2>
+                <div id="prediction_logs" class="log-container"></div>
+                <h2 class="mt-3">Gráfica de Predicción:</h2>
+                <img src="/prediccion_imagen" alt="Gráfica de Predicción PM2.5" class="img-fluid">
+            </div>
+        </div>
+    </div>
+
+    <!-- Enlace a Bootstrap JS y dependencias -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
