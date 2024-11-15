@@ -11,7 +11,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Cargar el modelo previamente entrenado
-model_path = os.path.join(BASE_DIR, "nuevo_modelo_lstm_general.h5")
+model_path = os.path.join(BASE_DIR, "nuevo_modelo_lstm_general.keras")
 model = load_model(model_path)
 
 # Función de predicción

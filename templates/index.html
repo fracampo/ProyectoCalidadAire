@@ -17,7 +17,7 @@
             overflow-y: scroll;
             font-family: monospace;
             white-space: pre-wrap;
-            margin-top: 30px; /* Más espacio encima de los logs */
+            margin-top: 30px;
         }
         /* Estilo para el logo */
         .logo {
@@ -25,20 +25,23 @@
             margin-left: auto;
             margin-right: auto;
             width: 150px;
-            margin-bottom: 40px; /* Más espacio debajo del logo */
+            margin-bottom: 40px;
         }
         /* Espaciado entre los elementos */
         .container {
-            margin-top: 50px; /* Más espacio encima del contenedor principal */
+            margin-top: 50px;
         }
         .nav-tabs {
-            margin-top: 30px; /* Más espacio encima de las pestañas */
+            margin-top: 30px;
         }
         .btn {
-            margin: 10px; /* Espacio adicional alrededor de los botones */
+            margin: 10px;
         }
     </style>
     <script>
+        // Variables para controlar si se ha mostrado el mensaje de predicción
+        let predictionMessageShown = false;
+
         // Funciones para recolección de datos, entrenamiento y predicción
         function startCollection() {
             fetch('/start')
@@ -61,6 +64,9 @@
         }
 
         function trainModel() {
+            // Mostrar ventana emergente cuando el entrenamiento inicie
+            alert("Entrenamiento iniciado. Esto puede tardar varios minutos...");
+
             document.getElementById('trainButton').disabled = true;
             document.getElementById('trainButton').innerText = "Entrenando...";
 
@@ -93,6 +99,7 @@
                     predictButton.innerText = "Realizar Predicción";
                     predictionImage.src = "/prediccion_imagen?" + new Date().getTime();
                     predictionImage.style.display = "block";
+                    predictionMessageShown = false; // Restablecer la bandera
                 })
                 .catch(error => {
                     alert('Error durante la predicción');
@@ -125,6 +132,12 @@
                 .then(data => {
                     let predictionLogsContainer = document.getElementById('prediction_logs');
                     predictionLogsContainer.textContent = data.logs.join("\n");
+
+                    // Mostrar la ventana emergente si hay un mensaje de predicción y no se ha mostrado aún
+                    if (data.message && !predictionMessageShown) {
+                        alert(data.message);
+                        predictionMessageShown = true; // Marcar el mensaje como mostrado
+                    }
                 });
         }
 

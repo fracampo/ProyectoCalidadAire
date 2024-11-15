@@ -76,7 +76,7 @@ def train_model():
         training_logs.append(f"Error cuadrático medio (MSE) en el entrenamiento: {mse_entrenamiento}")
 
         # Guardar el modelo en formato nativo de Keras
-        model.save("nuevo_modelo_lstm_general.h5")
+        model.save("nuevo_modelo_lstm_general.keras")
         training_logs.append("Modelo entrenado y guardado exitosamente en formato .keras.")
 
         return "Entrenamiento completado exitosamente."
