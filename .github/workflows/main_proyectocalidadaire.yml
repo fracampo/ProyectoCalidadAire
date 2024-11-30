@@ -66,4 +66,4 @@ jobs:
         with:
           app-name: 'ProyectoCalidadAire'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7BB23F19F04D482E914F32BA5EB4E8C1 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_762EBE72976F46F3A81FE3B3C3FA27A6 }}
