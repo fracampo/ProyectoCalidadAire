@@ -78,7 +78,7 @@ def get_prediction_logs():
 # Ruta para servir la imagen de la predicción
 @app.route('/prediccion_imagen')
 def prediccion_imagen():
-    image_path = os.path.join(BASE_DIR, "prediccion_pm25.png")
+    image_path = os.path.join(BASE_DIR, "prediccion_pm25_categorizada.png")
     return send_file(image_path, mimetype='image/png')
 
 # Función para ejecutar predict.py como un subproceso
